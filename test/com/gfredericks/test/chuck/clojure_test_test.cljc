@@ -28,5 +28,10 @@
                        ;; sticking a failing assertion in between two
                        ;; passing ones
                        (is (zero? x))
-                       (is (= x x)))]
-    (is (not (:result (quick-check 20 failing-prop))))))
+                       (is (= x x)))
+        ret (quick-check 20 failing-prop)
+        counters @*report-counters*]
+    (dosync (ref-set *report-counters* *initial-report-counters*))
+    (is (pos? (:fail counters)))
+    ;; Reset the report counters back because we want the test to pass if the "test" failed
+    (is (not (:result ret)))))
